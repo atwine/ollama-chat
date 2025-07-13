@@ -100,17 +100,19 @@ export default function Chat() {
             <h1 className="text-xl font-semibold">Ollama Chat</h1>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             {/* Document Dropdown */}
-            <div className="w-64">
+            <div className="w-[240px]">
               <DocumentDropdown 
                 onDocumentSelect={setSelectedDocument}
                 selectedDocumentId={selectedDocument}
+                className="w-full"
               />
             </div>
             
             {/* Model Selector */}
-            <Select value={selectedModel} onValueChange={setSelectedModel}>
+            <div className="min-w-[180px]">
+              <Select value={selectedModel} onValueChange={setSelectedModel}>
               <SelectTrigger className="w-40">
                 {isLoadingModels ? (
                   <div className="flex items-center gap-2">
@@ -146,6 +148,7 @@ export default function Chat() {
                 )}
               </SelectContent>
             </Select>
+            </div>
             
             {/* Document Manager */}
             <Button

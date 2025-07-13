@@ -6,6 +6,7 @@ import { Check, ChevronDown, FileText, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export interface Document {
   id: number;
@@ -17,14 +18,14 @@ export interface Document {
 }
 
 interface DocumentDropdownProps {
-  onDocumentSelect?: (documentId: number | null) => void;
-  selectedDocumentId?: number | null;
+  onDocumentSelect?: (documentIds: number[]) => void;
+  selectedDocumentIds?: number[];
   className?: string;
 }
 
 export function DocumentDropdown({
   onDocumentSelect,
-  selectedDocumentId,
+  selectedDocumentIds = [],
   className,
 }: DocumentDropdownProps) {
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -65,22 +66,22 @@ export function DocumentDropdown({
     };
   }, [toast]);
 
-  // Find the selected document
-  const selectedDocument = selectedDocumentId
-    ? documents.find((doc) => doc.id === selectedDocumentId)
-    : null;
-
-  // Handle document selection
-  const handleDocumentSelect = (documentId: number) => {
-    onDocumentSelect?.(documentId);
-    setOpen(false);
+  // Handle document selection toggle
+  const toggleDocumentSelection = (documentId: number) => {
+    const newSelection = selectedDocumentIds.includes(documentId)
+      ? selectedDocumentIds.filter(id => id !== documentId)
+      : [...selectedDocumentIds, documentId];
+    
+    onDocumentSelect?.(newSelection);
   };
 
   // Clear document selection
   const clearSelection = () => {
-    onDocumentSelect?.(null);
-    setOpen(false);
+    onDocumentSelect?.([]);
   };
+  
+  // Count selected documents
+  const selectedCount = selectedDocumentIds.length;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -97,16 +98,23 @@ export function DocumentDropdown({
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               <span>Loading documents...</span>
             </div>
-          ) : selectedDocument ? (
+          ) : selectedCount > 0 ? (
             <div className="flex items-center">
               <FileText className="mr-2 h-4 w-4" />
-              <span className="truncate">{selectedDocument.originalName}</span>
-              {selectedDocument.processingStatus === 'processing' && (
+              <span className="truncate">
+                {selectedCount === 1 
+                  ? documents.find(doc => selectedDocumentIds.includes(doc.id))?.originalName 
+                  : `${selectedCount} documents selected`}
+              </span>
+              {documents.some(doc => 
+                selectedDocumentIds.includes(doc.id) && 
+                doc.processingStatus === 'processing'
+              ) && (
                 <Loader2 className="ml-2 h-4 w-4 animate-spin" />
               )}
             </div>
           ) : (
-            <span>Select a document</span>
+            <span>Select documents</span>
           )}
           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -120,27 +128,40 @@ export function DocumentDropdown({
               </div>
             ) : (
               <>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start"
-                  onClick={clearSelection}
-                >
-                  <span>No document (use all)</span>
-                </Button>
+                <div className="flex items-center space-x-2 p-2">
+                  <Checkbox 
+                    id="select-all"
+                    checked={selectedCount > 0 && selectedCount === documents.length}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        // Select all documents
+                        onDocumentSelect?.(documents.map(doc => doc.id));
+                      } else {
+                        // Clear selection
+                        clearSelection();
+                      }
+                    }}
+                  />
+                  <label 
+                    htmlFor="select-all"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    {selectedCount === documents.length ? "Deselect all" : "Select all"}
+                  </label>
+                </div>
+                <div className="h-px bg-muted my-1" />
                 {documents.map((document) => (
                   <div key={document.id} className="p-1">
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start"
-                      onClick={() => handleDocumentSelect(document.id)}
-                    >
+                    <div className="flex w-full items-center space-x-2 p-2 hover:bg-accent rounded-md">
+                      <Checkbox
+                        id={`document-${document.id}`}
+                        checked={selectedDocumentIds.includes(document.id)}
+                        onCheckedChange={() => toggleDocumentSelection(document.id)}
+                      />
                       <div className="flex w-full flex-col">
                         <div className="flex items-center">
                           <FileText className="mr-2 h-4 w-4" />
                           <span className="truncate flex-1">{document.originalName}</span>
-                          {selectedDocumentId === document.id && (
-                            <Check className="ml-2 h-4 w-4" />
-                          )}
                         </div>
                         {document.processingStatus === 'processing' && (
                           <div className="mt-1 w-full">
@@ -162,7 +183,7 @@ export function DocumentDropdown({
                           </div>
                         )}
                       </div>
-                    </Button>
+                    </div>
                   </div>
                 ))}
               </>

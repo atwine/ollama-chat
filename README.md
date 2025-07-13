@@ -4,6 +4,8 @@ A modern, responsive chat application interface designed to communicate with loc
 
 ## Features
 
+![alt text](image.png)
+
 ### 🎨 **Modern UI Design**
 - Dark/light theme toggle with system preference detection
 - Professional chat interface with message bubbles

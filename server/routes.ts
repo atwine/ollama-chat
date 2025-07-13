@@ -90,13 +90,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // RAG chat endpoint
   app.post('/api/chat/rag', async (req, res) => {
     try {
-      const { query, model = 'llama3.1:8b', documentId = null } = req.body;
+      const { query, model = 'llama3.1:8b', documentIds = [] } = req.body;
       
       if (!query) {
         return res.status(400).json({ error: 'Query is required' });
       }
 
-      const result = await ragService.generateRAGResponse(query, model, documentId);
+      const result = await ragService.generateRAGResponse(query, model, documentIds);
       
       res.json({
         answer: result.answer,

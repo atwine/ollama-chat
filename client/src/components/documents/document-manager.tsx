@@ -128,14 +128,14 @@ export function DocumentManager({ isOpen, onClose }: DocumentManagerProps) {
         <DialogContent className="sm:max-w-2xl" aria-describedby="document-manager-description">
           <DialogHeader>
             <DialogTitle>Document Library</DialogTitle>
-            <p id="document-manager-description" className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground" id="document-manager-description">
               Manage your uploaded documents for RAG functionality
             </p>
           </DialogHeader>
           
           <div className="space-y-4">
             {/* Search and Upload */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 w-full">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input

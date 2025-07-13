@@ -196,7 +196,7 @@ export class RAGService {
     }
   }
 
-  async searchDocuments(query: string, limit: number = 5, documentId?: number | null): Promise<RAGResult> {
+  async searchDocuments(query: string, limit: number = 5, documentIds?: number[]): Promise<RAGResult> {
     try {
       // Generate embedding for the query
       const queryEmbedding = await this.generateEmbedding(query);
@@ -261,14 +261,15 @@ export class RAGService {
       // Fall back to keyword search if semantic search fails
       console.warn('Falling back to keyword search');
       
-      // Get documents, filtered by documentId if provided
+      // Get documents, filtered by documentIds if provided
       let documents;
-      if (documentId) {
-        const doc = await storage.getUserDocuments(1).then(docs => 
-          docs.find(d => d.id === documentId)
-        );
-        documents = doc ? [doc] : [];
+      if (documentIds && documentIds.length > 0) {
+        // Get all user documents first
+        const allDocs = await storage.getUserDocuments(1); // Mock user ID
+        // Filter to only include the specified document IDs
+        documents = allDocs.filter(doc => documentIds.includes(doc.id));
       } else {
+        // If no document IDs specified, get all user documents
         documents = await storage.getUserDocuments(1); // Mock user ID
       }
       
@@ -335,10 +336,10 @@ export class RAGService {
     return `${timestamp}_${originalName.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
   }
 
-  async generateRAGResponse(query: string, model?: string, documentId?: number | null): Promise<RAGResponse> {
+  async generateRAGResponse(query: string, model?: string, documentIds?: number[]): Promise<RAGResponse> {
     try {
       // Search for relevant documents
-      const { sources, context } = await this.searchDocuments(query, 5, documentId);
+      const { sources, context } = await this.searchDocuments(query, 5, documentIds);
       
       // Prepare the prompt with context
       const prompt = `You are a helpful assistant answering questions based on the provided context.
