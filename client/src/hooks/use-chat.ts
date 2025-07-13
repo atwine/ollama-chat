@@ -171,7 +171,7 @@ export function useChat() {
 
         if (response.ok) {
           const data = await response.json();
-          aiResponse = data.response;
+          aiResponse = data.answer; // Fixed field name to match server response
           sources = data.sources || [];
         } else {
           aiResponse = "I'm having trouble accessing the documents. Please try again.";

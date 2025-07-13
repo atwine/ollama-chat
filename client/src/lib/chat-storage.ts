@@ -68,7 +68,7 @@ export const chatStorage = {
       maxTokens: 2048,
       systemPrompt: '',
       apiEndpoint: 'http://localhost:11434',
-      useRAG: false,
+      useRAG: true, // Enable RAG by default to use document-grounded answers
     };
   },
 
