@@ -139,14 +139,61 @@ export default function Chat() {
             {!currentSession?.messages.length ? (
               /* Welcome Message */
               <div className="flex justify-center mb-8">
-                <div className="text-center max-w-md">
+                <div className="text-center max-w-2xl">
                   <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
                     <Bot className="w-8 h-8 text-primary-foreground" />
                   </div>
                   <h2 className="text-2xl font-semibold mb-2">Welcome to Ollama Chat</h2>
-                  <p className="text-muted-foreground">
-                    Your local AI assistant powered by Ollama. Start a conversation by typing a message below.
+                  <p className="text-muted-foreground mb-8">
+                    Your local AI assistant powered by Ollama. Start a conversation by typing a message below or try one of these examples:
                   </p>
+                  
+                  {/* Sample Questions */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
+                    <Button
+                      variant="outline"
+                      className="h-auto p-4 text-left justify-start hover:bg-muted/50"
+                      onClick={() => sendMessage("Explain quantum computing in simple terms")}
+                    >
+                      <div>
+                        <div className="font-medium text-sm mb-1">Explain quantum computing in simple terms</div>
+                        <div className="text-xs text-muted-foreground">Learn about complex topics</div>
+                      </div>
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      className="h-auto p-4 text-left justify-start hover:bg-muted/50"
+                      onClick={() => sendMessage("Write a Python function to sort a list")}
+                    >
+                      <div>
+                        <div className="font-medium text-sm mb-1">Write a Python function to sort a list</div>
+                        <div className="text-xs text-muted-foreground">Get coding help</div>
+                      </div>
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      className="h-auto p-4 text-left justify-start hover:bg-muted/50"
+                      onClick={() => sendMessage("What are the benefits of renewable energy?")}
+                    >
+                      <div>
+                        <div className="font-medium text-sm mb-1">What are the benefits of renewable energy?</div>
+                        <div className="text-xs text-muted-foreground">Explore current topics</div>
+                      </div>
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      className="h-auto p-4 text-left justify-start hover:bg-muted/50"
+                      onClick={() => sendMessage("Help me plan a productive daily routine")}
+                    >
+                      <div>
+                        <div className="font-medium text-sm mb-1">Help me plan a productive daily routine</div>
+                        <div className="text-xs text-muted-foreground">Get personal advice</div>
+                      </div>
+                    </Button>
+                  </div>
                 </div>
               </div>
             ) : (
