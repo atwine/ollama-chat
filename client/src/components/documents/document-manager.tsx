@@ -25,7 +25,12 @@ export function DocumentManager({ isOpen, onClose }: DocumentManagerProps) {
   const fetchDocuments = async () => {
     setLoading(true);
     try {
-      const response = await apiRequest('/api/documents');
+      const response = await fetch('/api/documents', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       if (response.ok) {
         const data = await response.json();
         setDocuments(data);
@@ -49,8 +54,11 @@ export function DocumentManager({ isOpen, onClose }: DocumentManagerProps) {
 
   const handleDeleteDocument = async (documentId: number) => {
     try {
-      const response = await apiRequest(`/api/documents/${documentId}`, {
+      const response = await fetch(`/api/documents/${documentId}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
 
       if (response.ok) {
@@ -117,9 +125,12 @@ export function DocumentManager({ isOpen, onClose }: DocumentManagerProps) {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-2xl">
+        <DialogContent className="sm:max-w-2xl" aria-describedby="document-manager-description">
           <DialogHeader>
             <DialogTitle>Document Library</DialogTitle>
+            <p id="document-manager-description" className="text-sm text-muted-foreground">
+              Manage your uploaded documents for RAG functionality
+            </p>
           </DialogHeader>
           
           <div className="space-y-4">

@@ -72,7 +72,7 @@ export function DocumentUpload({ isOpen, onClose, onUploadComplete }: DocumentUp
     formData.append('file', file);
 
     try {
-      const response = await apiRequest('/api/documents/upload', {
+      const response = await fetch('/api/documents/upload', {
         method: 'POST',
         body: formData,
       });

@@ -36,9 +36,12 @@ export function SettingsModal({ isOpen, onClose, settings, onSave }: SettingsMod
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" aria-describedby="settings-description">
         <DialogHeader>
           <DialogTitle>Settings</DialogTitle>
+          <p id="settings-description" className="text-sm text-muted-foreground">
+            Configure AI model parameters and behavior
+          </p>
         </DialogHeader>
         
         <div className="space-y-6">

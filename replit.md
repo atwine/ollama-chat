@@ -21,28 +21,37 @@ Preferred communication style: Simple, everyday language.
 ### Backend Architecture
 - **Runtime**: Node.js with Express.js
 - **Language**: TypeScript with ES modules
-- **Database**: PostgreSQL with Drizzle ORM
+- **Database**: PostgreSQL with Drizzle ORM (with pgvector for embeddings)
 - **Session Management**: Connect-pg-simple for PostgreSQL session storage
 - **Development**: Hot reloading with Vite middleware integration
+- **RAG Service**: Document processing, chunking, and retrieval system
 
 ### Database Schema
-The application uses three main tables:
+The application uses five main tables:
 - **users**: User authentication and management
 - **chatSessions**: Chat conversation metadata
 - **messages**: Individual chat messages with role-based organization
+- **documents**: Uploaded PDF and text files for RAG functionality
+- **documentChunks**: Text chunks with embeddings for vector search
 
 ## Key Components
 
 ### Chat Interface
 - **Chat Layout**: Main chat interface with sidebar for session management
-- **Message Components**: User and AI message display with formatting support
+- **Message Components**: User and AI message display with formatting support and source attribution
 - **Chat Input**: Multi-line input with character counting and keyboard shortcuts
 - **Typing Indicator**: Visual feedback during AI response generation
+
+### RAG System
+- **Document Upload**: PDF and text file upload with validation and progress tracking
+- **Document Manager**: File library with search, preview, and deletion capabilities
+- **RAG Service**: Document processing, chunking, and retrieval functionality
+- **Vector Search**: Mock implementation ready for pgvector integration
 
 ### UI Components
 - **Theme System**: Dark/light mode toggle with CSS variable-based theming
 - **Responsive Design**: Mobile-first approach with collapsible sidebar
-- **Settings Modal**: Configuration for AI parameters (temperature, max tokens, system prompt)
+- **Settings Modal**: Configuration for AI parameters and RAG toggle
 - **Component Library**: Comprehensive UI components from Shadcn/ui
 
 ### Storage Layer
