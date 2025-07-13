@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ChatSession, ChatMessage, ChatSettings } from '@/types/chat';
+import { ChatSession, ChatMessage, ChatSettings, OllamaModel } from '@/types/chat';
 import { chatStorage } from '@/lib/chat-storage';
 
 export function useChat() {
@@ -8,6 +8,8 @@ export function useChat() {
   const [settings, setSettings] = useState<ChatSettings>(chatStorage.getDefaultSettings());
   const [isTyping, setIsTyping] = useState(false);
   const [selectedModel, setSelectedModel] = useState('llama3.1:8b');
+  const [availableModels, setAvailableModels] = useState<OllamaModel[]>([]);
+  const [isLoadingModels, setIsLoadingModels] = useState(false);
 
   // Load initial data
   useEffect(() => {
@@ -16,7 +18,66 @@ export function useChat() {
     
     setSessions(savedSessions);
     setSettings(savedSettings);
+    
+    // Fetch available models from API
+    fetchAvailableModels();
   }, []);
+  
+  // Fetch available models from Ollama
+  const fetchAvailableModels = useCallback(async () => {
+    setIsLoadingModels(true);
+    try {
+      const response = await fetch('/api/models');
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Transform the data into OllamaModel format
+        const models: OllamaModel[] = data.models.map((model: any) => ({
+          name: model.name,
+          displayName: formatModelName(model.name),
+          size: model.size ? `${Math.round(model.size / (1024 * 1024))}MB` : undefined
+        }));
+        
+        setAvailableModels(models);
+        
+        // If no models are available, we'll keep the default list
+        if (models.length === 0) {
+          console.warn('No models found from Ollama API, using default list');
+        }
+      } else {
+        console.error('Failed to fetch models:', await response.text());
+      }
+    } catch (error) {
+      console.error('Error fetching models:', error);
+    } finally {
+      setIsLoadingModels(false);
+    }
+  }, []);
+  
+  // Helper function to format model names for display
+  const formatModelName = (name: string): string => {
+    // Remove tags like :latest, :7b, etc.
+    let displayName = name.split(':')[0];
+    
+    // Capitalize and add spaces
+    displayName = displayName
+      .replace(/([a-z])([A-Z])/g, '$1 $2') // Add space between camelCase
+      .replace(/[-_]/g, ' ') // Replace hyphens and underscores with spaces
+      .replace(/\b\w/g, c => c.toUpperCase()); // Capitalize first letter of each word
+      
+    // Add the tag back if it exists (like 7B, 13B, etc.)
+    const tag = name.split(':')[1];
+    if (tag) {
+      // Clean up common model size tags
+      if (tag.includes('b')) {
+        displayName += ` ${tag.toUpperCase()}`;
+      } else {
+        displayName += ` ${tag}`;
+      }
+    }
+    
+    return displayName;
+  };
 
   // Mock AI response simulation
   const simulateAIResponse = useCallback((userMessage: string): Promise<string> => {
@@ -186,6 +247,9 @@ export function useChat() {
     isTyping,
     selectedModel,
     setSelectedModel,
+    availableModels,
+    isLoadingModels,
+    fetchAvailableModels,
     sendMessage,
     createNewSession,
     loadSession,

@@ -1,4 +1,4 @@
-import { users, documents, type User, type InsertUser, type Document, type InsertDocument } from "@shared/schema";
+import { users, documents, documentChunks, type User, type InsertUser, type Document, type InsertDocument, type InsertDocumentChunk, type DocumentChunk } from "@shared/schema";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -12,19 +12,27 @@ export interface IStorage {
   saveDocument(document: InsertDocument): Promise<Document>;
   getUserDocuments(userId: number): Promise<Document[]>;
   deleteDocument(documentId: number, userId?: number): Promise<void>;
+  
+  // Document chunk methods
+  saveDocumentChunk(chunk: InsertDocumentChunk): Promise<DocumentChunk>;
+  getDocumentChunks(documentId: number): Promise<DocumentChunk[]>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private documents: Map<number, Document>;
+  private documentChunks: Map<number, DocumentChunk>;
   currentId: number;
   currentDocId: number;
+  currentChunkId: number;
 
   constructor() {
     this.users = new Map();
     this.documents = new Map();
+    this.documentChunks = new Map();
     this.currentId = 1;
     this.currentDocId = 1;
+    this.currentChunkId = 1;
   }
 
   async getUser(id: number): Promise<User | undefined> {
@@ -67,7 +75,35 @@ export class MemStorage implements IStorage {
     const document = this.documents.get(documentId);
     if (document && (!userId || document.userId === userId)) {
       this.documents.delete(documentId);
+      
+      // Also delete all chunks associated with this document
+      const chunksToDelete = Array.from(this.documentChunks.values())
+        .filter(chunk => chunk.documentId === documentId);
+      
+      for (const chunk of chunksToDelete) {
+        this.documentChunks.delete(chunk.id);
+      }
     }
+  }
+  
+  async saveDocumentChunk(insertChunk: InsertDocumentChunk): Promise<DocumentChunk> {
+    const id = this.currentChunkId++;
+    const chunk: DocumentChunk = {
+      ...insertChunk,
+      id,
+      startPage: insertChunk.startPage || null,
+      endPage: insertChunk.endPage || null,
+      embedding: insertChunk.embedding || null,
+      createdAt: new Date()
+    };
+    this.documentChunks.set(id, chunk);
+    return chunk;
+  }
+  
+  async getDocumentChunks(documentId: number): Promise<DocumentChunk[]> {
+    return Array.from(this.documentChunks.values())
+      .filter(chunk => chunk.documentId === documentId)
+      .sort((a, b) => a.chunkIndex - b.chunkIndex);
   }
 }
 

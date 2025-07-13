@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Bot, Menu, Settings, Sun, Moon, FileText } from 'lucide-react';
-import { OLLAMA_MODELS } from '@/types/chat';
+// import { OLLAMA_MODELS } from '@/types/chat'; // We'll use dynamic models from API instead
 import { cn } from '@/lib/utils';
 
 export default function Chat() {
@@ -23,6 +23,9 @@ export default function Chat() {
     isTyping,
     selectedModel,
     setSelectedModel,
+    availableModels,
+    isLoadingModels,
+    fetchAvailableModels,
     sendMessage,
     createNewSession,
     loadSession,
@@ -98,14 +101,38 @@ export default function Chat() {
             {/* Model Selector */}
             <Select value={selectedModel} onValueChange={setSelectedModel}>
               <SelectTrigger className="w-40">
-                <SelectValue />
+                {isLoadingModels ? (
+                  <div className="flex items-center gap-2">
+                    <div className="h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                    <span>Loading...</span>
+                  </div>
+                ) : (
+                  <SelectValue />
+                )}
               </SelectTrigger>
               <SelectContent>
-                {OLLAMA_MODELS.map((model) => (
-                  <SelectItem key={model.name} value={model.name}>
-                    {model.displayName}
-                  </SelectItem>
-                ))}
+                {availableModels.length > 0 ? (
+                  availableModels.map((model) => (
+                    <SelectItem key={model.name} value={model.name}>
+                      <div className="flex justify-between items-center w-full">
+                        <span>{model.displayName}</span>
+                        {model.size && <span className="text-xs text-muted-foreground">{model.size}</span>}
+                      </div>
+                    </SelectItem>
+                  ))
+                ) : (
+                  <div className="p-2 text-center text-muted-foreground">
+                    <p>No models found</p>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="mt-2" 
+                      onClick={() => fetchAvailableModels()}
+                    >
+                      Refresh
+                    </Button>
+                  </div>
+                )}
               </SelectContent>
             </Select>
             

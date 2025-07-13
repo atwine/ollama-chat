@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { ragService } from "./rag-service";
 import multer from "multer";
+import ollama from "ollama";
 
 // Configure multer for file uploads
 const upload = multer({ 
@@ -74,6 +75,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get available Ollama models
+  app.get('/api/models', async (req, res) => {
+    try {
+      // Fetch models from Ollama
+      const models = await ollama.list();
+      res.json(models);
+    } catch (error) {
+      console.error(`Error fetching models: ${error}`);
+      res.status(500).json({ error: 'Failed to fetch models from Ollama' });
+    }
+  });
+
   // RAG chat endpoint
   app.post('/api/chat/rag', async (req, res) => {
     try {
@@ -86,7 +99,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const result = await ragService.generateRAGResponse(query, model);
       
       res.json({
-        response: result.response,
+        answer: result.answer,
         sources: result.sources,
         model,
         timestamp: new Date().toISOString()
