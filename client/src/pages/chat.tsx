@@ -8,6 +8,7 @@ import { ChatInput } from '@/components/chat/chat-input';
 import { SettingsModal } from '@/components/chat/settings-modal';
 import { TypingIndicator } from '@/components/chat/typing-indicator';
 import { DocumentManager } from '@/components/documents/document-manager';
+import { DocumentDropdown } from '@/components/documents/document-dropdown';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -32,6 +33,8 @@ export default function Chat() {
     deleteSession,
     updateSettings,
     clearCurrentSession,
+    setSelectedDocument,
+    selectedDocument,
   } = useChat();
   
   const { theme, toggleTheme } = useTheme();
@@ -98,6 +101,14 @@ export default function Chat() {
           </div>
           
           <div className="flex items-center gap-3">
+            {/* Document Dropdown */}
+            <div className="w-64">
+              <DocumentDropdown 
+                onDocumentSelect={setSelectedDocument}
+                selectedDocumentId={selectedDocument}
+              />
+            </div>
+            
             {/* Model Selector */}
             <Select value={selectedModel} onValueChange={setSelectedModel}>
               <SelectTrigger className="w-40">

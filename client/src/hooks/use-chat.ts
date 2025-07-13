@@ -10,6 +10,7 @@ export function useChat() {
   const [selectedModel, setSelectedModel] = useState('llama3.1:8b');
   const [availableModels, setAvailableModels] = useState<OllamaModel[]>([]);
   const [isLoadingModels, setIsLoadingModels] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<number | null>(null);
 
   // Load initial data
   useEffect(() => {
@@ -166,6 +167,7 @@ export function useChat() {
           body: JSON.stringify({
             query: content,
             model: selectedModel,
+            documentId: selectedDocument, // Include selected document if any
           }),
         });
 
@@ -256,5 +258,7 @@ export function useChat() {
     deleteSession,
     updateSettings,
     clearCurrentSession,
+    selectedDocument,
+    setSelectedDocument,
   };
 }

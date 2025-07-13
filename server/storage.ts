@@ -12,6 +12,7 @@ export interface IStorage {
   saveDocument(document: InsertDocument): Promise<Document>;
   getUserDocuments(userId: number): Promise<Document[]>;
   deleteDocument(documentId: number, userId?: number): Promise<void>;
+  updateDocumentStatus(documentId: number, status: string, processedChunks: number, totalChunks?: number): Promise<Document | undefined>;
   
   // Document chunk methods
   saveDocumentChunk(chunk: InsertDocumentChunk): Promise<DocumentChunk>;
@@ -59,7 +60,10 @@ export class MemStorage implements IStorage {
       id,
       uploadedAt: new Date(),
       metadata: insertDocument.metadata || null,
-      userId: insertDocument.userId || null
+      userId: insertDocument.userId || null,
+      processingStatus: insertDocument.processingStatus || 'processing',
+      chunksCount: insertDocument.chunksCount || 0,
+      processedChunks: insertDocument.processedChunks || 0
     };
     this.documents.set(id, document);
     return document;
@@ -104,6 +108,26 @@ export class MemStorage implements IStorage {
     return Array.from(this.documentChunks.values())
       .filter(chunk => chunk.documentId === documentId)
       .sort((a, b) => a.chunkIndex - b.chunkIndex);
+  }
+  
+  async updateDocumentStatus(
+    documentId: number, 
+    status: string, 
+    processedChunks: number, 
+    totalChunks?: number
+  ): Promise<Document | undefined> {
+    const document = this.documents.get(documentId);
+    if (document) {
+      const updatedDocument = {
+        ...document,
+        processingStatus: status,
+        processedChunks: processedChunks,
+        chunksCount: totalChunks !== undefined ? totalChunks : document.chunksCount
+      };
+      this.documents.set(documentId, updatedDocument);
+      return updatedDocument;
+    }
+    return undefined;
   }
 }
 

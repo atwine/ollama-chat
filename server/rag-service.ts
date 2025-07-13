@@ -73,7 +73,11 @@ export class RAGService {
       throw new Error(`Unsupported file type: ${mimeType}`);
     }
 
-    // Save document to storage
+    // Estimate number of chunks for progress tracking
+    const chunks = this.splitIntoChunks(content);
+    const chunksCount = chunks.length;
+
+    // Save document to storage with initial processing status
     const document = await storage.saveDocument({
       filename: this.generateFilename(originalName),
       originalName,
@@ -82,38 +86,61 @@ export class RAGService {
       content,
       metadata: JSON.stringify(metadata),
       userId,
+      processingStatus: "processing",
+      chunksCount,
+      processedChunks: 0,
     });
 
-    // Create chunks and generate embeddings (mock implementation)
-    await this.createDocumentChunks(document.id, content);
+    // Create chunks and generate embeddings asynchronously
+    // We don't await this to allow the upload to complete quickly
+    this.createDocumentChunks(document.id, content, chunks)
+      .catch(error => {
+        console.error(`Error processing document ${document.id}:`, error);
+        // Update document status to error
+        storage.updateDocumentStatus(document.id, "error", 0, chunksCount);
+      });
 
     return document.id;
   }
 
-  private async createDocumentChunks(documentId: number, content: string): Promise<void> {
-    const chunks = this.splitIntoChunks(content);
+  private async createDocumentChunks(documentId: number, content: string, preChunks?: string[]): Promise<void> {
+    // Use pre-split chunks if provided, otherwise split the content
+    const chunks = preChunks || this.splitIntoChunks(content);
     console.log(`Creating ${chunks.length} chunks for document ${documentId}`);
+    
+    // Update document with total chunks count
+    await storage.updateDocumentStatus(documentId, "processing", 0, chunks.length);
     
     // Store each chunk in the database with its embedding
     for (let i = 0; i < chunks.length; i++) {
-      const chunk = chunks[i];
-      
-      // Generate embedding for the chunk
-      const embedding = await this.generateEmbedding(chunk);
-      
-      // Store the chunk in the database
-      await storage.saveDocumentChunk({
-        documentId,
-        chunkIndex: i,
-        content: chunk,
-        // We don't have page information in our current implementation
-        // but we could add it in the future
-        startPage: null,
-        endPage: null,
-        embedding,
-      });
+      try {
+        const chunk = chunks[i];
+        
+        // Generate embedding for the chunk
+        const embedding = await this.generateEmbedding(chunk);
+        
+        // Store the chunk in the database
+        await storage.saveDocumentChunk({
+          documentId,
+          chunkIndex: i,
+          content: chunk,
+          // We don't have page information in our current implementation
+          // but we could add it in the future
+          startPage: null,
+          endPage: null,
+          embedding,
+        });
+        
+        // Update document processing status
+        await storage.updateDocumentStatus(documentId, "processing", i + 1, chunks.length);
+      } catch (error) {
+        console.error(`Error processing chunk ${i} for document ${documentId}:`, error);
+        // Continue with next chunk
+      }
     }
     
+    // Mark document as ready when all chunks are processed
+    await storage.updateDocumentStatus(documentId, "ready", chunks.length, chunks.length);
     console.log(`Successfully stored ${chunks.length} chunks for document ${documentId}`);
   }
 
@@ -169,13 +196,23 @@ export class RAGService {
     }
   }
 
-  async searchDocuments(query: string, limit: number = 5): Promise<RAGResult> {
+  async searchDocuments(query: string, limit: number = 5, documentId?: number | null): Promise<RAGResult> {
     try {
       // Generate embedding for the query
       const queryEmbedding = await this.generateEmbedding(query);
       
-      // Get all documents for the user (in a real app, this would be filtered by user ID)
-      const documents = await storage.getUserDocuments(1); // Mock user ID
+      // Get documents for the user, filtered by documentId if provided
+      let documents;
+      if (documentId) {
+        // If documentId is provided, only use that specific document
+        const doc = await storage.getUserDocuments(1).then(docs => 
+          docs.find(d => d.id === documentId)
+        );
+        documents = doc ? [doc] : [];
+      } else {
+        // Otherwise get all documents for the user
+        documents = await storage.getUserDocuments(1); // Mock user ID
+      }
       
       // Collect all chunks from all documents
       const allChunks: { chunk: DocumentChunk; document: any }[] = [];
@@ -224,7 +261,16 @@ export class RAGService {
       // Fall back to keyword search if semantic search fails
       console.warn('Falling back to keyword search');
       
-      const documents = await storage.getUserDocuments(1); // Mock user ID
+      // Get documents, filtered by documentId if provided
+      let documents;
+      if (documentId) {
+        const doc = await storage.getUserDocuments(1).then(docs => 
+          docs.find(d => d.id === documentId)
+        );
+        documents = doc ? [doc] : [];
+      } else {
+        documents = await storage.getUserDocuments(1); // Mock user ID
+      }
       
       // Simple keyword-based search fallback
       const matchingDocs = documents.filter(doc => 
@@ -289,10 +335,10 @@ export class RAGService {
     return `${timestamp}_${originalName.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
   }
 
-  async generateRAGResponse(query: string, model?: string): Promise<RAGResponse> {
+  async generateRAGResponse(query: string, model?: string, documentId?: number | null): Promise<RAGResponse> {
     try {
       // Search for relevant documents
-      const { sources, context } = await this.searchDocuments(query);
+      const { sources, context } = await this.searchDocuments(query, 5, documentId);
       
       // Prepare the prompt with context
       const prompt = `You are a helpful assistant answering questions based on the provided context.

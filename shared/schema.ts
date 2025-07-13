@@ -37,6 +37,9 @@ export const documents = pgTable("documents", {
   metadata: text("metadata"), // JSON string for additional metadata
   uploadedAt: timestamp("uploaded_at").defaultNow().notNull(),
   userId: integer("user_id").references(() => users.id),
+  processingStatus: text("processing_status").default("processing").notNull(), // 'processing', 'ready', 'error'
+  chunksCount: integer("chunks_count").default(0), // Total number of chunks for this document
+  processedChunks: integer("processed_chunks").default(0), // Number of chunks that have been processed
 });
 
 export const documentChunks = pgTable("document_chunks", {
@@ -78,6 +81,9 @@ export const insertDocumentSchema = createInsertSchema(documents).pick({
   content: true,
   metadata: true,
   userId: true,
+  processingStatus: true,
+  chunksCount: true,
+  processedChunks: true,
 });
 
 export const insertDocumentChunkSchema = createInsertSchema(documentChunks).pick({
