@@ -5,6 +5,16 @@ export interface ChatMessage {
   timestamp: string;
   model?: string;
   tokens?: number;
+  sources?: DocumentSource[];
+}
+
+export interface DocumentSource {
+  id: number;
+  filename: string;
+  originalName: string;
+  content: string;
+  page?: number;
+  relevanceScore: number;
 }
 
 export interface ChatSession {
@@ -20,6 +30,16 @@ export interface ChatSettings {
   maxTokens: number;
   systemPrompt: string;
   apiEndpoint: string;
+  useRAG: boolean;
+}
+
+export interface Document {
+  id: number;
+  filename: string;
+  originalName: string;
+  filesize: number;
+  mimeType: string;
+  uploadedAt: string;
 }
 
 export interface OllamaModel {

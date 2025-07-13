@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -28,6 +29,7 @@ export function SettingsModal({ isOpen, onClose, settings, onSave }: SettingsMod
       maxTokens: 2048,
       systemPrompt: '',
       apiEndpoint: 'http://localhost:11434',
+      useRAG: false,
     };
     setFormData(defaultSettings);
   };
@@ -115,6 +117,23 @@ export function SettingsModal({ isOpen, onClose, settings, onSave }: SettingsMod
             <p className="text-xs text-muted-foreground mt-1">
               Ollama server address
             </p>
+          </div>
+
+          {/* RAG Toggle */}
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label className="text-sm font-medium">Enable RAG</Label>
+              <p className="text-xs text-muted-foreground">
+                Use uploaded documents to provide context for responses
+              </p>
+            </div>
+            <Switch
+              checked={formData.useRAG}
+              onCheckedChange={(checked) => setFormData(prev => ({ 
+                ...prev, 
+                useRAG: checked 
+              }))}
+            />
           </div>
         </div>
 

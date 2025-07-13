@@ -68,6 +68,7 @@ export const chatStorage = {
       maxTokens: 2048,
       systemPrompt: '',
       apiEndpoint: 'http://localhost:11434',
+      useRAG: false,
     };
   },
 

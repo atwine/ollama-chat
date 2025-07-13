@@ -7,10 +7,11 @@ import { Message } from '@/components/chat/message';
 import { ChatInput } from '@/components/chat/chat-input';
 import { SettingsModal } from '@/components/chat/settings-modal';
 import { TypingIndicator } from '@/components/chat/typing-indicator';
+import { DocumentManager } from '@/components/documents/document-manager';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Bot, Menu, Settings, Sun, Moon } from 'lucide-react';
+import { Bot, Menu, Settings, Sun, Moon, FileText } from 'lucide-react';
 import { OLLAMA_MODELS } from '@/types/chat';
 import { cn } from '@/lib/utils';
 
@@ -33,6 +34,7 @@ export default function Chat() {
   const { theme, toggleTheme } = useTheme();
   const isMobile = useIsMobile();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isDocumentManagerOpen, setIsDocumentManagerOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -106,6 +108,16 @@ export default function Chat() {
                 ))}
               </SelectContent>
             </Select>
+            
+            {/* Document Manager */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsDocumentManagerOpen(true)}
+              className="p-2"
+            >
+              <FileText className="w-5 h-5" />
+            </Button>
             
             {/* Theme Toggle */}
             <Button
@@ -225,6 +237,12 @@ export default function Chat() {
         onClose={() => setIsSettingsOpen(false)}
         settings={settings}
         onSave={updateSettings}
+      />
+
+      {/* Document Manager Modal */}
+      <DocumentManager
+        isOpen={isDocumentManagerOpen}
+        onClose={() => setIsDocumentManagerOpen(false)}
       />
     </div>
   );

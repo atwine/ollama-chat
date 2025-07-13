@@ -94,8 +94,31 @@ export function useChat() {
     setIsTyping(true);
 
     try {
-      // Simulate AI response
-      const aiResponse = await simulateAIResponse(content);
+      let aiResponse: string;
+      let sources: any[] = [];
+
+      if (settings.useRAG) {
+        // Use RAG endpoint
+        const response = await fetch('/api/chat/rag', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            query: content,
+            model: selectedModel,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          aiResponse = data.response;
+          sources = data.sources || [];
+        } else {
+          aiResponse = "I'm having trouble accessing the documents. Please try again.";
+        }
+      } else {
+        // Use regular simulation
+        aiResponse = await simulateAIResponse(content);
+      }
       
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -104,6 +127,7 @@ export function useChat() {
         timestamp: new Date().toISOString(),
         model: selectedModel,
         tokens: Math.floor(Math.random() * 500) + 50, // Mock token count
+        sources: sources.length > 0 ? sources : undefined,
       };
 
       session.messages.push(assistantMessage);
@@ -126,7 +150,7 @@ export function useChat() {
     } finally {
       setIsTyping(false);
     }
-  }, [currentSession, selectedModel, isTyping, simulateAIResponse, createNewSession]);
+  }, [currentSession, selectedModel, isTyping, simulateAIResponse, createNewSession, settings.useRAG]);
 
   // Load chat session
   const loadSession = useCallback((session: ChatSession) => {

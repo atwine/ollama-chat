@@ -1,6 +1,7 @@
 import { ChatMessage } from '@/types/chat';
 import { Button } from '@/components/ui/button';
-import { Copy, Check } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Copy, Check, FileText, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 
 interface MessageProps {
@@ -82,6 +83,46 @@ export function Message({ message }: MessageProps) {
             </div>
           )}
         </div>
+        
+        {/* Source Documents */}
+        {message.sources && message.sources.length > 0 && (
+          <div className="mt-3 p-3 bg-muted/50 rounded-lg border">
+            <div className="flex items-center gap-2 mb-2">
+              <FileText className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">Sources</span>
+            </div>
+            <div className="space-y-2">
+              {message.sources.map((source, index) => (
+                <div key={index} className="flex items-center justify-between p-2 bg-background/50 rounded border">
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <FileText className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                    <span className="text-xs font-medium truncate">
+                      {source.originalName}
+                    </span>
+                    {source.page && (
+                      <Badge variant="secondary" className="text-xs">
+                        Page {source.page}
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-xs">
+                      {Math.round(source.relevanceScore * 100)}%
+                    </Badge>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0"
+                      onClick={() => copyToClipboard(source.content)}
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
