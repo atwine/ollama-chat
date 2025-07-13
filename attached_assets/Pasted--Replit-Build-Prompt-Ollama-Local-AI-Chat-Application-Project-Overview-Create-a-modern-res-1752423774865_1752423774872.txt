@@ -1,0 +1,303 @@
+# Replit Build Prompt: Ollama Local AI Chat Application
+
+## Project Overview
+Create a modern, responsive chat application interface designed to communicate with local Ollama models. The app should have a polished, professional UI similar to ChatGPT, Claude, or other popular AI chat interfaces, with placeholder functionality that can later be connected to Ollama's API.
+
+## Core Requirements
+
+### 1. File Structure
+Create these files in your Replit project:
+- `index.html` (main application)
+- `styles.css` (all styling)
+- `app.js` (JavaScript functionality)
+- `README.md` (setup instructions)
+
+### 2. Design Specifications
+
+#### Color Scheme (Dark Theme Primary)
+- Background: #1a1a1a (dark gray)
+- Chat area: #2d2d2d (medium gray)
+- Sidebar: #262626 (slightly lighter gray)
+- User messages: #0084ff (blue)
+- AI messages: #404040 (dark gray)
+- Text: #ffffff (white)
+- Secondary text: #b0b0b0 (light gray)
+- Accent: #00d4aa (teal/green)
+- Borders: #404040
+
+#### Light Theme (Toggle Option)
+- Background: #ffffff
+- Chat area: #f8f9fa
+- Sidebar: #f1f3f4
+- User messages: #0084ff
+- AI messages: #e9ecef
+- Text: #212529
+- Secondary text: #6c757d
+- Accent: #28a745
+
+### 3. Layout Structure
+
+#### Header Bar
+- App title: "Ollama Chat"
+- Model selector dropdown (placeholder options)
+- Settings icon
+- Theme toggle button (dark/light)
+- Connection status indicator
+
+#### Sidebar (Collapsible)
+- "New Chat" button
+- Chat history list
+- Each chat item shows:
+  - First few words of conversation
+  - Timestamp
+  - Delete button on hover
+- Collapse/expand button
+
+#### Main Chat Area
+- Chat messages container with auto-scroll
+- Message bubbles with:
+  - User messages (right-aligned, blue)
+  - AI messages (left-aligned, gray)
+  - Timestamps
+  - Copy button for AI messages
+  - Typing indicator during "response"
+- Input area at bottom
+
+#### Input Section
+- Large text input field
+- Send button
+- Character counter
+- File upload button (for future functionality)
+- Voice input button (placeholder)
+
+### 4. Message Display Features
+
+#### Message Bubbles
+- Rounded corners
+- Proper spacing and padding
+- Markdown rendering support
+- Code syntax highlighting (placeholder)
+- Copy-to-clipboard functionality
+- Timestamp on hover
+
+#### Special Message Types
+- System messages (different styling)
+- Error messages (red accent)
+- Loading/thinking indicators
+- Code blocks with syntax highlighting
+- Formatted lists and headers
+
+### 5. Interactive Features
+
+#### Core Functionality (Mock Implementation)
+- Send message on Enter key
+- Send message on button click
+- Auto-scroll to bottom on new messages
+- Message history persistence (localStorage)
+- Chat session management
+- Theme switching
+
+#### Advanced Features
+- Typing indicator simulation
+- Message editing (for user messages)
+- Message deletion
+- Export chat history
+- Search within chat
+- Keyboard shortcuts (Ctrl+Enter, etc.)
+
+### 6. UI Components
+
+#### Model Selector
+- Dropdown with popular Ollama models:
+  - llama3.1:8b
+  - llama3.1:70b
+  - codellama:13b
+  - mistral:7b
+  - phi3:mini
+  - qwen2:7b
+- Current model display
+- Model switching capability
+
+#### Settings Panel (Modal)
+- Temperature slider
+- Max tokens input
+- System prompt textarea
+- API endpoint configuration
+- Connection settings
+
+#### Chat Controls
+- Clear chat button
+- Export chat (JSON/TXT)
+- Chat settings per conversation
+- Model switching within chat
+
+### 7. Responsive Design
+
+#### Desktop Layout
+- Three-column layout: sidebar, chat, settings
+- Minimum width: 1200px optimal
+- Resizable sidebar
+
+#### Tablet Layout
+- Two-column: chat + collapsible sidebar
+- Touch-friendly buttons
+- Swipe gestures for sidebar
+
+#### Mobile Layout
+- Single column with overlay sidebar
+- Bottom-sheet style input
+- Optimized for thumb navigation
+- Pull-to-refresh functionality
+
+### 8. Technical Specifications
+
+#### CSS Features
+- CSS Grid and Flexbox layouts
+- Custom CSS variables for theming
+- Smooth transitions and animations
+- Scrollbar styling
+- Loading animations
+- Hover effects and micro-interactions
+
+#### JavaScript Functionality
+- Modular code structure
+- Event delegation
+- Local storage management
+- Mock API responses
+- Message rendering engine
+- Theme persistence
+
+#### Mock API Integration
+- Simulated Ollama API responses
+- Realistic typing delays
+- Error handling simulation
+- Connection status simulation
+- Model loading states
+
+### 9. Visual Design Elements
+
+#### Icons and Graphics
+- Use Lucide icons or similar icon library
+- Consistent icon sizing and styling
+- Loading spinners and indicators
+- Status icons (connected/disconnected)
+
+#### Animations
+- Smooth message appearance
+- Typing indicators
+- Button hover effects
+- Sidebar slide animations
+- Theme transition effects
+
+### 10. Content and Placeholder Data
+
+#### Welcome Message
+- Friendly introduction to Ollama chat
+- Feature highlights
+- Getting started tips
+
+#### Sample Conversations
+- Pre-populated chat examples
+- Different conversation types
+- Code examples and explanations
+
+#### Model Information
+- Model descriptions
+- Capability summaries
+- Performance indicators
+
+### 11. Advanced Features (Future-Ready)
+
+#### Conversation Management
+- Multiple chat tabs
+- Chat organization/folders
+- Conversation search
+- Backup/restore functionality
+
+#### Customization Options
+- Custom themes
+- Font size adjustment
+- Message density options
+- Keyboard shortcuts customization
+
+#### Integration Ready
+- WebSocket connection structure
+- API endpoint configuration
+- Authentication placeholders
+- Error handling framework
+
+### 12. Implementation Guidelines
+
+#### Code Structure
+- Separate concerns (UI, API, storage)
+- Reusable components
+- Clean, commented code
+- Error boundaries
+
+#### Performance
+- Efficient DOM manipulation
+- Lazy loading for long conversations
+- Debounced input handling
+- Optimized rendering
+
+#### Accessibility
+- ARIA labels and roles
+- Keyboard navigation
+- Screen reader support
+- High contrast mode
+
+### 13. Mock Data Structure
+
+#### Chat Message Format
+```json
+{
+  "id": "unique_id",
+  "role": "user|assistant|system",
+  "content": "message text",
+  "timestamp": "ISO date",
+  "model": "model_name",
+  "tokens": 150
+}
+```
+
+#### Chat Session Format
+```json
+{
+  "id": "session_id",
+  "title": "Chat title",
+  "created": "ISO date",
+  "model": "model_name",
+  "messages": []
+}
+```
+
+### 14. Styling Inspiration
+- Take visual cues from ChatGPT, Claude, and Perplexity
+- Modern, clean interface
+- Intuitive user experience
+- Professional color scheme
+- Smooth animations and transitions
+
+### 15. Final Deliverable
+A fully functional chat interface that:
+- Looks and feels like a professional AI chat application
+- Handles user input and displays mock responses
+- Manages chat history and sessions
+- Provides smooth, responsive user experience
+- Is ready for Ollama API integration
+- Works across all device sizes
+
+## Testing Checklist
+- [ ] All UI components render correctly
+- [ ] Messages send and display properly
+- [ ] Sidebar functionality works
+- [ ] Theme switching functions
+- [ ] Responsive design verified
+- [ ] Chat history persists
+- [ ] Mock responses simulate real AI
+- [ ] All interactive elements work
+- [ ] Keyboard shortcuts function
+- [ ] Error states display correctly
+
+## Integration Notes
+The app should be built with clear separation between UI and API logic, making it easy to later replace mock responses with actual Ollama API calls. Include detailed comments indicating where Ollama integration points will be added.
