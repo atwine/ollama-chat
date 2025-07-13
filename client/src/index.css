@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(60, 4.8%, 95.9%);
+  --secondary-foreground: hsl(24, 9.8%, 10%);
+  --accent: hsl(60, 4.8%, 95.9%);
+  --accent-foreground: hsl(24, 9.8%, 10%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(20, 14.3%, 4.1%);
+  --radius: 0.5rem;
+
+  /* Chat-specific colors */
+  --chat-user-bg: hsl(207, 90%, 54%);
+  --chat-ai-bg: hsl(60, 4.8%, 95.9%);
+  --chat-sidebar-bg: hsl(60, 4.8%, 97%);
+  --accent-teal: hsl(162, 100%, 40%);
+}
+
+.dark {
+  --background: hsl(20, 14.3%, 4.1%);
+  --foreground: hsl(0, 0%, 95%);
+  --muted: hsl(0, 0%, 15%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(0, 0%, 9%);
+  --popover-foreground: hsl(0, 0%, 95%);
+  --card: hsl(0, 0%, 9%);
+  --card-foreground: hsl(0, 0%, 95%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(240, 3.7%, 15.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(240, 3.7%, 15.9%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+
+  /* Chat-specific dark colors */
+  --chat-user-bg: hsl(207, 90%, 54%);
+  --chat-ai-bg: hsl(0, 0%, 15%);
+  --chat-sidebar-bg: hsl(0, 0%, 10%);
+  --accent-teal: hsl(162, 100%, 40%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 3px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+
+  /* Code styling */
+  code {
+    @apply bg-muted px-1 py-0.5 rounded text-sm font-mono;
+  }
+
+  pre {
+    @apply bg-muted p-3 rounded-lg overflow-x-auto;
+  }
+
+  pre code {
+    @apply bg-transparent px-0 py-0;
+  }
+}
+
+@layer utilities {
+  .animate-pulse-slow {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+/* Prose styling for message content */
+.prose {
+  @apply text-foreground;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+  @apply text-foreground;
+}
+
+.prose strong {
+  @apply font-semibold text-foreground;
+}
+
+.prose code {
+  @apply bg-muted px-1 py-0.5 rounded text-sm;
+}
+
+.prose pre {
+  @apply bg-muted border border-border;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-border pl-4 italic;
+}
+
+.prose ul, .prose ol {
+  @apply pl-4;
+}
+
+.prose li {
+  @apply my-1;
+}
+
+.prose a {
+  @apply text-primary hover:underline;
+}
